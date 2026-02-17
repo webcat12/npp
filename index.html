@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>简单文件上传下载</title>
+<style>
+  body{max-width:800px;margin:30px auto;font-family:Arial}
+  .box{border:1px solid #ccc;padding:20px;margin:20px 0;border-radius:8px}
+  button{padding:10px 16px;background:#007bff;color:white;border:none;border-radius:6px;cursor:pointer}
+  .file{padding:8px;border-bottom:1px solid #eee}
+  a{color:#007bff;text-decoration:none}
+</style>
+
+<div class="box">
+  <h3>上传文件</h3>
+  <input type="file" id="fileInput">
+  <button onclick="upload()">上传</button>
+</div>
+
+<div class="box">
+  <h3>文件列表（可下载）</h3>
+  <div id="fileList"></div>
+</div>
+
+<script>
+function upload(){
+  const input = document.getElementById('fileInput');
+  if(!input.files[0])return alert('选文件');
+  const file = input.files[0];
+  const url = URL.createObjectURL(file);
+  const list = JSON.parse(localStorage.getItem('files')||'[]');
+  
+  list.push({
+    name:file.name,
+    url:url,
+    time:new Date().toLocaleString()
+  });
+  
+  localStorage.setItem('files',JSON.stringify(list));
+  input.value='';
+  showList();
+}
+
+function showList(){
+  const list = JSON.parse(localStorage.getItem('files')||'[]');
+  const dom = document.getElementById('fileList');
+  dom.innerHTML = list.map((f,i)=>`
+    <div class="file">
+      ${f.name} (${f.time})
+      <a href="${f.url}" download="${f.name}" style="margin-left:10px">下载</a>
+    </div>
+  `).join('');
+}
+
+showList();
+</script>
